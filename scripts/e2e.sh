@@ -9,6 +9,9 @@ OUT="${1:-target/e2e}"
 rm -rf "$OUT"
 mkdir -p "$OUT"
 
+# A janela precisa ser desenhada: acorda o monitor, se estiver dormindo.
+caffeinate -u -t 2
+
 # Mesmo diretório de build do app: só o crate do Rabisco recompila com a feature.
 cargo build --release --features selftest
 cp target/release/rabisco target/rabisco-selftest

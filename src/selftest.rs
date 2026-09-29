@@ -16,6 +16,7 @@
 //! O processo termina com código 0 se tudo bateu, 1 se algo falhou e 3 se travou.
 
 use std::path::PathBuf;
+use std::sync::atomic::{AtomicU32, Ordering};
 use std::time::Duration;
 
 use egui::{Event, Key, Modifiers, PointerButton, Pos2, RawInput, UserData, pos2};
@@ -24,6 +25,12 @@ use crate::clipboard::{self, ClipImage};
 use crate::editor::Editor;
 
 const TIMEOUT: Duration = Duration::from_secs(60);
+/// Quadros entre um pedido de print e a repetição dele.
+const SHOT_RETRY: u32 = 8;
+
+// Para a mensagem de tempo esgotado, que sai de outra thread.
+static FRAMES: AtomicU32 = AtomicU32::new(0);
+static SHOTS: AtomicU32 = AtomicU32::new(0);
 
 enum Expect {
     /// O pixel tem que estar pintado com esta cor.
@@ -37,6 +44,9 @@ pub struct SelfTest {
     original: Option<ClipImage>,
     frame: u32,
     shots: u32,
+    /// Número do print pedido e ainda não recebido.
+    awaiting: Option<u32>,
+    retry_at: u32,
     popup_at: Option<u32>,
     esc_at: Option<u32>,
     checks: Vec<([f32; 2], Expect, &'static str)>,
@@ -89,9 +99,11 @@ impl SelfTest {
         std::thread::spawn(|| {
             std::thread::sleep(TIMEOUT);
             eprintln!(
-                "selftest: FALHOU — tempo esgotado ({}s). A janela precisa estar visível: \
-                 tela desbloqueada e monitor ligado.",
-                TIMEOUT.as_secs()
+                "selftest: FALHOU — tempo esgotado ({}s) com {} quadros processados e {} prints. \
+                 A janela precisa estar visível: tela desbloqueada e monitor ligado.",
+                TIMEOUT.as_secs(),
+                FRAMES.load(Ordering::Relaxed),
+                SHOTS.load(Ordering::Relaxed),
             );
             std::process::exit(3);
         });
@@ -100,15 +112,33 @@ impl SelfTest {
             original: clipboard::read().ok(),
             frame: 0,
             shots: 0,
+            awaiting: None,
+            retry_at: 0,
             popup_at: None,
             esc_at: None,
             checks: Vec::new(),
         })
     }
 
+    /// Pede o próximo print, repetindo o pedido a cada poucos quadros até ele chegar:
+    /// um quadro pode não ser desenhado (por exemplo, logo que a janela aparece numa
+    /// máquina virtual do CI) e aí o pedido feito nele se perde.
+    fn want_shot(&mut self, f: u32) -> bool {
+        if self.awaiting != Some(self.shots) {
+            self.awaiting = Some(self.shots);
+            self.retry_at = f;
+        }
+        if f >= self.retry_at {
+            self.retry_at = f + SHOT_RETRY;
+            return true;
+        }
+        false
+    }
+
     /// Injeta a ação do quadro atual. Devolve `true` quando este quadro deve ser capturado.
     pub fn before_frame(&mut self, input: &mut RawInput, editor: &mut Editor) -> bool {
         self.frame += 1;
+        FRAMES.store(self.frame, Ordering::Relaxed);
         self.save_screenshots(&input.events);
         let f = self.frame;
         if f == 1 {
@@ -116,11 +146,14 @@ impl SelfTest {
         }
         if self.original.is_none() {
             // Estado vazio: print, esc e pronto.
-            if self.shots >= 1 && self.esc_at.is_none() {
+            if self.shots == 0 {
+                return f >= 5 && self.want_shot(f);
+            }
+            if self.esc_at.is_none() {
                 key(input, Key::Escape, Modifiers::NONE);
                 self.esc_at = Some(f);
             }
-            return f == 5;
+            return false;
         }
         let Some((rect, scale)) = editor.canvas_transform() else {
             if f > 5 {
@@ -170,19 +203,22 @@ impl SelfTest {
                     .push(([2.0, 2.0], Expect::Original, "canto sem rabisco"));
             }
             6 => key(input, Key::Z, Modifiers::COMMAND),
-            9 => return true,
             _ => {}
         }
-        if self.shots >= 1 && self.popup_at.is_none() {
+        if self.shots == 0 {
+            return f >= 9 && self.want_shot(f);
+        }
+        let Some(popup_at) = self.popup_at else {
             let chevron = editor.chevron_rect().center();
             press(input, chevron, true);
             press(input, chevron, false);
             self.popup_at = Some(f);
+            return false;
+        };
+        if self.shots == 1 {
+            return f >= popup_at + 3 && self.want_shot(f);
         }
-        if self.popup_at.is_some_and(|p| f == p + 3) {
-            return true;
-        }
-        if self.shots >= 2 && self.esc_at.is_none() {
+        if self.esc_at.is_none() {
             key(input, Key::Escape, Modifiers::NONE); // fecha o popup
             self.esc_at = Some(f);
         }
@@ -201,6 +237,9 @@ impl SelfTest {
             let Event::Screenshot { image, .. } = event else {
                 continue;
             };
+            if self.awaiting != Some(self.shots) {
+                continue; // cópia atrasada de um pedido repetido
+            }
             let name = match (self.original.is_some(), self.shots) {
                 (false, _) => "vazio.png",
                 (true, 0) => "editor.png",
@@ -214,6 +253,8 @@ impl SelfTest {
             }
             eprintln!("selftest: print salvo em {}", self.dir.join(name).display());
             self.shots += 1;
+            self.awaiting = None;
+            SHOTS.store(self.shots, Ordering::Relaxed);
         }
     }
 
