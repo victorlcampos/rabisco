@@ -31,6 +31,6 @@ fetch('https://api.github.com/repos/victorlcampos/rabisco/releases/latest', {
   .then((release) => {
     if (!release || !release.tag_name) return;
     const note = document.getElementById('download-note');
-    note.textContent = `Version ${release.tag_name.replace(/^v/, '')} · ${note.textContent}`;
+    note.textContent = `${release.tag_name} · ${note.textContent}`;
   })
   .catch(() => {});
