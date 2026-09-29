@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  macos:
+    name: Testes e empacotamento (macOS)
+    # macOS 15 em Apple Silicon: tem sessão gráfica (janela, clipboard, Metal),
+    # que o teste de ponta a ponta precisa.
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Toolchain do rust-toolchain.toml
+        run: rustup toolchain install "$(sed -n 's/^channel = "\(.*\)"/\1/p' rust-toolchain.toml)" --profile minimal --component clippy,rustfmt
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Formatação
+        run: cargo fmt --check
+
+      - name: Clippy
+        run: cargo clippy --locked --all-targets --features selftest -- -D warnings
+
+      - name: Testes unitários
+        run: cargo test --locked
+
+      - name: Teste de ponta a ponta (clipboard → editor → rabisco → clipboard)
+        run: ./scripts/e2e.sh target/e2e
+
+      - name: Prints do teste de ponta a ponta
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-prints
+          path: target/e2e/
+          if-no-files-found: ignore
+
+      - name: Empacota o Rabisco.app
+        run: |
+          ./scripts/bundle.sh
+          ditto -c -k --keepParent target/Rabisco.app target/Rabisco.zip
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: Rabisco.app
+          path: target/Rabisco.zip

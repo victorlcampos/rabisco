@@ -1,0 +1,39 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Publica o Rabisco.app
+    runs-on: macos-15
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Confere se a tag bate com a versão do Cargo.toml
+        run: |
+          versao=$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)
+          if [ "v$versao" != "$GITHUB_REF_NAME" ]; then
+            echo "A tag $GITHUB_REF_NAME não bate com a versão $versao do Cargo.toml" >&2
+            exit 1
+          fi
+
+      - name: Toolchain com os alvos Apple Silicon e Intel
+        run: rustup toolchain install "$(sed -n 's/^channel = "\(.*\)"/\1/p' rust-toolchain.toml)" --profile minimal --target aarch64-apple-darwin,x86_64-apple-darwin
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Gera o Rabisco.app universal
+        run: |
+          UNIVERSAL=1 ./scripts/bundle.sh
+          ditto -c -k --keepParent target/Rabisco.app target/Rabisco.zip
+
+      - name: Cria a release com o Rabisco.zip
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" target/Rabisco.zip --title "Rabisco $GITHUB_REF_NAME" --generate-notes

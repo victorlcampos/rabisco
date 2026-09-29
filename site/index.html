@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rabisco — rabisque o print e cole de volta</title>
+  <meta name="description" content="App de barra de menus para macOS: aperte ⌃⇧⌘E, rabisque a imagem do clipboard no estilo do editor do WhatsApp e ela volta para o clipboard, pronta para colar. Grátis e de código aberto.">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b141a" media="(prefers-color-scheme: dark)">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Rabisco — rabisque o print e cole de volta">
+  <meta property="og:description" content="Aperte ⌃⇧⌘E, rabisque a imagem do clipboard e cole. App grátis e de código aberto para macOS.">
+  <meta property="og:url" content="https://victorlcampos.github.io/rabisco/">
+  <meta property="og:image" content="https://victorlcampos.github.io/rabisco/img/og.png">
+  <meta property="og:locale" content="pt_BR">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="img/favicon.png">
+  <link rel="apple-touch-icon" href="img/icon-180.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#topo"><img src="img/icon-180.png" alt="" width="32" height="32"> Rabisco</a>
+      <nav aria-label="Seções">
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#instalar">Instalar</a>
+        <a href="https://github.com/victorlcampos/rabisco">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="topo">
+    <section class="hero wrap">
+      <div class="hero-copy">
+        <img class="hero-icon" src="img/icon.png" alt="" width="96" height="96">
+        <p class="eyebrow">App de barra de menus para macOS</p>
+        <h1>Rabisque o print.<br>Cole de volta.</h1>
+        <p class="lede">
+          Aperte <kbd>⌃</kbd><kbd>⇧</kbd><kbd>⌘</kbd><kbd>E</kbd> e a imagem do clipboard abre num
+          editor igual ao do WhatsApp. Rabisque, aperte <kbd>↩</kbd> e ela volta para o clipboard,
+          pronta para o <kbd>⌘</kbd><kbd>V</kbd>.
+        </p>
+        <div class="cta">
+          <a class="btn btn-primary" id="download" href="https://github.com/victorlcampos/rabisco/releases/latest/download/Rabisco.zip">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M5 21h14"/></svg>
+            <span class="label">Baixar para macOS</span>
+          </a>
+          <a class="btn btn-ghost" href="https://github.com/victorlcampos/rabisco">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></svg>
+            Código no GitHub
+          </a>
+        </div>
+        <p class="fineprint" id="download-note">Grátis e de código aberto · macOS 12 ou mais novo · Apple Silicon e Intel</p>
+      </div>
+
+      <figure class="demo">
+        <svg class="demo-svg" viewBox="0 0 640 520" role="img" aria-labelledby="demo-titulo">
+          <title id="demo-titulo">O editor do Rabisco com um gráfico de vendas sendo rabiscado em vermelho e copiado</title>
+          <defs>
+            <filter id="sombra" x="-10%" y="-10%" width="120%" height="130%">
+              <feDropShadow dx="0" dy="3" stdDeviation="7" flood-color="#0b141a" flood-opacity=".16"/>
+            </filter>
+          </defs>
+          <rect class="d-win" x="0.5" y="0.5" width="639" height="519" rx="14"/>
+          <path class="d-titlebar" d="M14.5 .5h611a14 14 0 0 1 14 14V32H.5V14.5a14 14 0 0 1 14-14z"/>
+          <circle cx="20" cy="16.5" r="6" fill="#ff5f57"/>
+          <circle cx="40" cy="16.5" r="6" fill="#febc2e"/>
+          <circle cx="60" cy="16.5" r="6" fill="#28c840"/>
+          <text class="d-wtitle" x="320" y="21" text-anchor="middle">Rabisco</text>
+
+          <line class="d-sep" x1="0" y1="92.5" x2="640" y2="92.5"/>
+          <text class="d-hint" x="24" y="66">↩ copia · esc descarta</text>
+          <circle class="d-tool" cx="320" cy="62" r="22"/>
+          <g class="d-icon" transform="translate(309 51) scale(.9167)">
+            <path d="M4 20l4.88-1.34L20.37 7.17a2.5 2.5 0 0 0-3.54-3.54L5.34 15.12Z"/>
+            <path d="M18.04 9.5 14.5 5.97"/>
+          </g>
+          <g class="d-icon" transform="translate(547.5 51.5) scale(.875)">
+            <path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>
+          </g>
+          <g class="d-icon" transform="translate(593.5 51.5) scale(.875)">
+            <path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/>
+          </g>
+
+          <g class="d-shot" transform="translate(70 112)">
+            <rect class="c-page" width="500" height="300" filter="url(#sombra)"/>
+            <rect class="c-card" x="18" y="16" width="464" height="268" rx="12"/>
+            <text class="c-title" x="40" y="52">Vendas por mês</text>
+            <text class="c-sub" x="40" y="72">1º semestre de 2026</text>
+            <text class="c-kpi" x="460" y="52" text-anchor="end">R$ 212 mil</text>
+            <text class="c-up" x="460" y="72" text-anchor="end">▲ 18% no semestre</text>
+            <g class="c-grid">
+              <line x1="40" x2="460" y1="110.5" y2="110.5"/>
+              <line x1="40" x2="460" y1="157.5" y2="157.5"/>
+              <line x1="40" x2="460" y1="204.5" y2="204.5"/>
+            </g>
+            <line class="c-axis" x1="40" x2="460" y1="250.5" y2="250.5"/>
+            <rect class="c-bar" x="60" y="180" width="44" height="70" rx="5"/>
+            <rect class="c-bar" x="126" y="154" width="44" height="96" rx="5"/>
+            <rect class="c-bar" x="192" y="166" width="44" height="84" rx="5"/>
+            <rect class="c-bar" x="258" y="132" width="44" height="118" rx="5"/>
+            <rect class="c-bar c-hi" x="324" y="100" width="44" height="150" rx="5"/>
+            <rect class="c-bar" x="390" y="146" width="44" height="104" rx="5"/>
+            <g class="c-lbl" text-anchor="middle">
+              <text x="82" y="270">Jan</text><text x="148" y="270">Fev</text><text x="214" y="270">Mar</text>
+              <text x="280" y="270">Abr</text><text x="346" y="270">Mai</text><text x="412" y="270">Jun</text>
+            </g>
+          </g>
+
+          <g class="d-ink">
+            <path class="s1" pathLength="100" d="M404 200C440 194 460 232 460 294C460 354 446 394 414 394C380 394 370 352 370 292C370 234 384 198 426 198"/>
+            <path class="s2" pathLength="100" d="M232 226C262 196 318 196 360 226"/>
+            <path class="s3" pathLength="100" d="M353.4 211.4 360 226 344.1 224.5"/>
+          </g>
+
+          <g class="d-palette">
+            <circle cx="138" cy="476" r="11" fill="#3b3b3b"/>
+            <circle cx="168" cy="476" r="11" fill="#9a9ca3"/>
+            <circle class="d-white" cx="198" cy="476" r="10.4"/>
+            <circle cx="228" cy="476" r="11" fill="#5ac8fa"/>
+            <circle cx="258" cy="476" r="11" fill="#7ed957"/>
+            <circle cx="288" cy="476" r="11" fill="#b17cee"/>
+            <circle cx="318" cy="476" r="11" fill="#e9963c"/>
+            <circle cx="348" cy="476" r="15" fill="none" stroke="#ea5a4f" stroke-width="2"/>
+            <circle cx="348" cy="476" r="11" fill="#ea5a4f"/>
+            <path class="d-chev" d="m372 480 6-6 6 6"/>
+            <circle class="d-size" cx="411.5" cy="476" r="3.5"/>
+            <circle class="d-size d-on" cx="433" cy="476" r="6"/>
+            <circle class="d-size" cx="459.5" cy="476" r="8.5"/>
+            <circle class="d-size" cx="491" cy="476" r="11"/>
+          </g>
+          <g class="d-send">
+            <circle cx="588" cy="476" r="24"/>
+            <path d="m578 476.5 7 7 14-14.5"/>
+          </g>
+
+          <g class="d-toast">
+            <rect x="214" y="419" width="212" height="38" rx="19"/>
+            <path d="m236 438 5 5 10-10"/>
+            <text x="262" y="443">Copiado. É só colar!</text>
+          </g>
+        </svg>
+      </figure>
+    </section>
+
+    <section class="steps band" id="como-funciona">
+      <div class="wrap">
+        <h2>Do print ao <kbd>⌘</kbd><kbd>V</kbd> em quatro passos</h2>
+        <ol class="step-list">
+          <li>
+            <span class="keys"><kbd>⌃</kbd><kbd>⇧</kbd><kbd>⌘</kbd><kbd>4</kbd></span>
+            <h3>Tire um print</h3>
+            <p>O print vai direto para o clipboard. Também vale “Copiar imagem” no navegador ou <kbd>⌘</kbd><kbd>C</kbd> num arquivo de imagem no Finder.</p>
+          </li>
+          <li>
+            <span class="keys"><kbd>⌃</kbd><kbd>⇧</kbd><kbd>⌘</kbd><kbd>E</kbd></span>
+            <h3>Abra o Rabisco</h3>
+            <p>É o mesmo trio de teclas do print: troque o 4 pelo E. O editor abre com a imagem que está no clipboard.</p>
+          </li>
+          <li>
+            <span class="keys"><span class="pencil-key" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20l4.88-1.34L20.37 7.17a2.5 2.5 0 0 0-3.54-3.54L5.34 15.12Z"/><path d="M18.04 9.5 14.5 5.97"/></svg></span></span>
+            <h3>Rabisque</h3>
+            <p>Oito cores na barra, mais 24 na setinha e quatro espessuras. <kbd>⌘</kbd><kbd>Z</kbd> desfaz, <kbd>⇧</kbd><kbd>⌘</kbd><kbd>Z</kbd> refaz.</p>
+          </li>
+          <li>
+            <span class="keys"><kbd>↩</kbd></span>
+            <h3>Cole onde quiser</h3>
+            <p>A imagem rabiscada volta para o clipboard na resolução original. <kbd>⌘</kbd><kbd>V</kbd> no WhatsApp, no Slack, no e-mail…</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="gallery wrap" aria-labelledby="galeria-titulo">
+      <h2 id="galeria-titulo">É assim no seu Mac</h2>
+      <p class="section-lede">Prints de verdade do app, gerados pelo teste automatizado que roda a cada mudança no código.</p>
+      <div class="shots">
+        <figure>
+          <img src="img/editor-claro.png" width="1296" height="1144" loading="lazy" alt="Editor do Rabisco no tema claro, com um rabisco vermelho sobre o print de uma tela">
+          <figcaption>Tema claro</figcaption>
+        </figure>
+        <figure>
+          <img src="img/editor-escuro.png" width="1296" height="1144" loading="lazy" alt="Editor do Rabisco no tema escuro, com um rabisco vermelho sobre o print de uma tela">
+          <figcaption>Tema escuro, seguindo o macOS</figcaption>
+        </figure>
+        <figure>
+          <img src="img/cores.png" width="1296" height="1144" loading="lazy" alt="Editor no tema escuro com o popup de 24 cores extras aberto acima da paleta">
+          <figcaption>A setinha abre mais 24 cores</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="features band" aria-labelledby="recursos-titulo">
+      <div class="wrap">
+        <h2 id="recursos-titulo">Pequeno, rápido e sem pedir nada</h2>
+        <ul class="feature-grid">
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8"/></svg>
+            <h3>Atalho sem permissões</h3>
+            <p>O <kbd>⌃</kbd><kbd>⇧</kbd><kbd>⌘</kbd><kbd>E</kbd> funciona em qualquer app e não exige liberar Acessibilidade nem gravação de tela.</p>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>
+            <h3>Resolução original</h3>
+            <p>Copia PNG e TIFF sem perder pixels e mantém o DPI: prints Retina colam no tamanho certo no Notes, Keynote e Pages.</p>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.59 7.59"/><circle cx="11" cy="11" r="2"/></svg>
+            <h3>O que você vê é o que vai</h3>
+            <p>Os traços são vetores, redesenhados na resolução da imagem na hora de copiar, com o mesmo código que desenha na tela.</p>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            <h3>Leve em repouso</h3>
+            <p>Fica quietinho na barra de menus. A janela e a GPU só existem enquanto você está rabiscando.</p>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path class="fill" d="M12 3a9 9 0 0 0 0 18z"/></svg>
+            <h3>Claro e escuro</h3>
+            <p>As cores seguem o tema do macOS, com a mesma paleta do editor de fotos do WhatsApp.</p>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></svg>
+            <h3>Código aberto</h3>
+            <p>Escrito em Rust com egui, wgpu (Metal) e tiny&#8209;skia. Licença MIT; o código está no GitHub.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="shortcuts wrap" aria-labelledby="atalhos-titulo">
+      <h2 id="atalhos-titulo">Atalhos do editor</h2>
+      <table>
+        <tbody>
+          <tr><td><kbd>↩</kbd> <kbd>⌘</kbd><kbd>S</kbd> <kbd>⌘</kbd><kbd>C</kbd></td><td>Copia para o clipboard e fecha</td></tr>
+          <tr><td><kbd>esc</kbd> <kbd>⌘</kbd><kbd>W</kbd></td><td>Descarta (se já tem rabisco, pede um segundo <kbd>esc</kbd>)</td></tr>
+          <tr><td><kbd>⌘</kbd><kbd>Z</kbd></td><td>Desfaz o último traço</td></tr>
+          <tr><td><kbd>⇧</kbd><kbd>⌘</kbd><kbd>Z</kbd> <kbd>⌘</kbd><kbd>Y</kbd></td><td>Refaz</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="install band" id="instalar" aria-labelledby="instalar-titulo">
+      <div class="wrap">
+        <h2 id="instalar-titulo">Instalar</h2>
+        <div class="install-grid">
+          <article class="card" id="card-download">
+            <h3>Baixar o app</h3>
+            <ol>
+              <li><a href="https://github.com/victorlcampos/rabisco/releases/latest/download/Rabisco.zip">Baixe o Rabisco.zip</a> e abra: o Finder descompacta.</li>
+              <li>Arraste o <strong>Rabisco</strong> para <strong>Aplicativos</strong> e abra por lá.</li>
+              <li>Na primeira vez, o macOS avisa que não consegue verificar o app, porque ele não é assinado pela Apple. Vá em <strong>Ajustes do Sistema → Privacidade e Segurança</strong> e clique em <strong>Abrir Mesmo Assim</strong>.</li>
+            </ol>
+            <p class="muted">Pronto: o lápis aparece na barra de menus e o Rabisco passa a abrir junto com o Mac.</p>
+          </article>
+          <article class="card">
+            <h3>Compilar do código</h3>
+            <p>Precisa do <a href="https://rustup.rs">Rust</a>. O script compila, instala em Aplicativos e liga o início com o Mac.</p>
+            <div class="code">
+              <div class="code-head">
+                <span>Terminal</span>
+                <button class="copy" type="button" data-copy="cmd-install">Copiar</button>
+              </div>
+              <pre><code id="cmd-install">git clone https://github.com/victorlcampos/rabisco.git
+cd rabisco
+./scripts/install.sh</code></pre>
+            </div>
+          </article>
+        </div>
+        <p class="install-foot">
+          Para não abrir junto com o Mac, desmarque <strong>Abrir ao iniciar o Mac</strong> no menu do lápis.
+          Para remover tudo, rode <code>./scripts/uninstall.sh</code> na pasta do código.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <p class="footer-brand"><img src="img/icon-180.png" alt="" width="20" height="20"><span>Rabisco é código aberto, sob a <a href="https://github.com/victorlcampos/rabisco/blob/main/LICENSE">licença MIT</a>.</span></p>
+      <p><a href="https://github.com/victorlcampos/rabisco">github.com/victorlcampos/rabisco</a></p>
+    </div>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

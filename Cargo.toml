@@ -1,0 +1,32 @@
+[package]
+name = "rabisco"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.95"
+description = "Rabisque a imagem do clipboard (estilo editor do WhatsApp) e devolva para o clipboard."
+license = "MIT"
+
+[dependencies]
+egui = "0.36"
+egui-winit = { version = "0.36", default-features = false }
+egui-wgpu = { version = "0.36", features = ["winit"] }
+winit = "0.30.13"
+pollster = "1"
+tiny-skia = { version = "0.12", default-features = false, features = ["std", "simd"] }
+image = { version = "0.25", default-features = false, features = ["png", "tiff", "jpeg", "gif", "bmp", "webp"] }
+png = "0.18"
+tiff = "0.11"
+global-hotkey = "0.8"
+tray-icon = "0.25"
+objc2 = "0.6"
+objc2-foundation = "0.3"
+objc2-app-kit = "0.3"
+libc = "0.2"
+
+[features]
+# Teste de ponta a ponta (src/selftest.rs), rodado pelo scripts/e2e.sh e no CI.
+selftest = []
+
+[profile.release]
+strip = true
+lto = "thin"
