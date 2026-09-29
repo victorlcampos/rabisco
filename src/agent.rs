@@ -1,8 +1,9 @@
-//! Presença na barra de menus: ícone, menu e o atalho global ⌃⇧⌘E.
+//! Presença na barra de menus: ícone, menu e o atalho global ⌃⇧E.
 //!
 //! O atalho usa `RegisterEventHotKey` (Carbon), que não exige permissão de
-//! Acessibilidade. ⌃⇧⌘ é o mesmo trio do print para o clipboard (⌃⇧⌘4):
-//! tira o print, troca o 4 pelo E e já está rabiscando.
+//! Acessibilidade. E de editar; ⌃ e ⇧ já estão na mão de quem acabou de tirar um
+//! print para o clipboard (⇧⌘4 segurando ⌃): é só soltar o ⌘ e apertar o E.
+//! O macOS não usa ⌃⇧E, e os apps raramente usam atalhos só com control.
 
 use global_hotkey::hotkey::{Code, HotKey, Modifiers};
 use global_hotkey::{GlobalHotKeyEvent, GlobalHotKeyManager, HotKeyState};
@@ -13,7 +14,7 @@ use winit::event_loop::EventLoopProxy;
 
 use crate::{UserEvent, icons, login};
 
-pub const SHORTCUT: &str = "⌃⇧⌘E";
+pub const SHORTCUT: &str = "⌃⇧E";
 pub const MENU_EDIT: &str = "edit";
 pub const MENU_LOGIN: &str = "login";
 pub const MENU_QUIT: &str = "quit";
@@ -28,10 +29,7 @@ impl Agent {
     /// Precisa rodar na thread principal, com o event loop já iniciado.
     pub fn new(proxy: EventLoopProxy<UserEvent>) -> Self {
         let hotkeys = GlobalHotKeyManager::new().expect("gerenciador de atalhos");
-        let hotkey = HotKey::new(
-            Some(Modifiers::CONTROL | Modifiers::SHIFT | Modifiers::SUPER),
-            Code::KeyE,
-        );
+        let hotkey = HotKey::new(Some(Modifiers::CONTROL | Modifiers::SHIFT), Code::KeyE);
         let hotkey_ok = match hotkeys.register(hotkey) {
             Ok(()) => true,
             Err(err) => {
@@ -46,9 +44,7 @@ impl Agent {
             "Editar imagem do clipboard (atalho em uso por outro app)"
         };
         let shortcut = Accelerator::new(
-            accelerator::Modifiers::CONTROL
-                | accelerator::Modifiers::SHIFT
-                | accelerator::Modifiers::META,
+            accelerator::Modifiers::CONTROL | accelerator::Modifiers::SHIFT,
             accelerator::Code::KeyE,
         );
         let edit = MenuItem::with_id(MENU_EDIT, edit_label, true, Some(shortcut));

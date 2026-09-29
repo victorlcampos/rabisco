@@ -499,14 +499,14 @@ impl Editor {
         painter.text(
             c + vec2(0.0, 10.0),
             Align2::CENTER_CENTER,
-            "Copie uma imagem (um print com ⌃⇧⌘4, por exemplo)",
+            "Copie uma imagem (no print com ⇧⌘4, segure ⌃ ao selecionar)",
             FontId::proportional(14.0),
             th.hint,
         );
         painter.text(
             c + vec2(0.0, 30.0),
             Align2::CENTER_CENTER,
-            "e aperte ⌃⇧⌘E para rabiscar em cima dela.",
+            "e aperte ⌃⇧E para rabiscar em cima dela.",
             FontId::proportional(14.0),
             th.hint,
         );

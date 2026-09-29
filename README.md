@@ -17,11 +17,10 @@ with its tail.
 
 ## Usage
 
-1. Copy an image: a screenshot with **⌃⇧⌘4** (it goes straight to the clipboard), "Copy
-   Image" in a browser, or **⌘C** on an image file in Finder.
-2. Press **⌃⇧⌘E** (control + shift + command + E). It's the same trio as the
-   screenshot-to-clipboard shortcut: take the screenshot, swap the 4 for an E and you're
-   already scribbling.
+1. Copy an image: a screenshot with **⇧⌘4**, holding **⌃** while you select (that sends it
+   straight to the clipboard), "Copy Image" in a browser, or **⌘C** on an image file in Finder.
+2. Press **⌃⇧E** (control + shift + E), E for edit. Right after the screenshot your fingers
+   are already on ⌃ and ⇧: let go of ⌘ and press E.
 3. Scribble. Pick a color from the palette (the little arrow opens more colors) and a stroke
    width from the dots.
 4. **↩** (or the green button) copies the scribbled image to the clipboard. Just paste it with ⌘V.
@@ -67,7 +66,7 @@ To remove everything: `./scripts/uninstall.sh`.
   screenshots paste at the right size in Notes, Keynote and friends.
 - **Strokes** are stored as vectors and redrawn at the original resolution when copying,
   by the same code that draws them on screen.
-- **Global shortcut** via `RegisterEventHotKey`: no Accessibility permission needed.
+- **Global shortcut** (⌃⇧E) via `RegisterEventHotKey`: no Accessibility permission needed.
 - **Light when idle:** the window and the GPU only exist while the editor is open.
 - **Log:** `~/Library/Logs/Rabisco.log`.
 

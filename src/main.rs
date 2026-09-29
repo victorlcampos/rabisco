@@ -1,6 +1,6 @@
 //! Rabisco: rabisque a imagem do clipboard e devolva para o clipboard.
 //!
-//! Fica na barra de menus. ⌃⇧⌘E abre o editor com a imagem que estiver no
+//! Fica na barra de menus. ⌃⇧E abre o editor com a imagem que estiver no
 //! clipboard; ↩ (ou o botão verde) copia o resultado de volta; esc descarta.
 
 mod agent;

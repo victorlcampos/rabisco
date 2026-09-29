@@ -24,4 +24,4 @@ cp -R target/Rabisco.app "$DEST/Rabisco.app"
 launchctl bootstrap "gui/$(id -u)" "$PLIST"
 
 echo "Rabisco instalado em $DEST/Rabisco.app e rodando na barra de menus."
-echo "Atalho: ⌃⇧⌘E (control + shift + command + E)"
+echo "Atalho: ⌃⇧E (control + shift + E)"

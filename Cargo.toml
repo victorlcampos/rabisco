@@ -1,6 +1,6 @@
 [package]
 name = "rabisco"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 rust-version = "1.95"
 description = "Rabisque a imagem do clipboard (estilo editor do WhatsApp) e devolva para o clipboard."
