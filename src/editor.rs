@@ -184,16 +184,6 @@ impl Editor {
         painter.circle_stroke(tool.center(), 22.0, Stroke::new(2.0, th.ring));
         icons::pencil(&painter, tool.center(), 22.0, th.icon);
 
-        if self.doc.is_some() && rect.width() > 700.0 {
-            painter.text(
-                pos2(rect.min.x + SIDE_MARGIN, cy),
-                Align2::LEFT_CENTER,
-                "↩ copia   ·   esc descarta",
-                FontId::proportional(12.5),
-                th.hint,
-            );
-        }
-
         let Some(doc) = &mut self.doc else { return };
         let redo_rect =
             Rect::from_center_size(pos2(rect.max.x - SIDE_MARGIN - 18.0, cy), vec2(38.0, 38.0));
