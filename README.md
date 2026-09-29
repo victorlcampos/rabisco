@@ -41,10 +41,10 @@ Portuguese.
 
 Requires macOS 12 or later, on Apple silicon or Intel.
 
-**Download:** grab `Rabisco.zip` from the [latest release](https://github.com/victorlcampos/rabisco/releases/latest),
-drag the app to **Applications** and open it from there. Since it isn't signed by Apple,
-macOS blocks the first launch: go to **System Settings → Privacy & Security** and click
-**Open Anyway**.
+**Download:** grab `Rabisco.dmg` from the [latest release](https://github.com/victorlcampos/rabisco/releases/latest),
+open it and drag Rabisco into **Applications**, then open it from there. Since it isn't
+signed by Apple, macOS blocks the first launch: go to **System Settings → Privacy &
+Security** and click **Open Anyway**. (A `Rabisco.zip` with just the app is there too.)
 
 **Build from source:** requires [Rust](https://rustup.rs) (`rust-toolchain.toml` picks the version).
 
@@ -77,6 +77,7 @@ To remove everything: `./scripts/uninstall.sh`.
 cargo test              # unit tests
 ./scripts/e2e.sh        # end-to-end test (replaces your clipboard contents!)
 ./scripts/bundle.sh     # builds target/Rabisco.app (UNIVERSAL=1 for Apple silicon + Intel)
+./scripts/dmg.sh        # packs it into target/Rabisco.dmg
 ```
 
 The end-to-end test (`src/selftest.rs`, behind the `selftest` feature) opens the editor,
@@ -87,16 +88,17 @@ on GitHub Actions (macOS 15) on every push; the screenshots and `Rabisco.app` ar
 as workflow artifacts.
 
 **Releasing:** bump `version` in `Cargo.toml` and push a matching tag
-(`git tag v0.1.0 && git push origin v0.1.0`). The *Release* workflow builds a universal
-`Rabisco.zip` and creates the release; the website's download button always points to the
-latest one.
+(`git tag v0.1.1 && git push origin v0.1.1`). The *Release* workflow builds a universal
+`Rabisco.dmg` (plus a `Rabisco.zip`) and creates the release; the website's download button
+always points to the latest one.
 
 **Website:** `site/` (plain HTML, CSS and a little JS, no build step) is published to GitHub
 Pages by the *Site* workflow on every push that touches it.
 
-**Icons:** `assets/icon.svg` (app icon) and `assets/tray.svg` (menu bar) are the sources; the
-PNGs next to them are what the build uses. After editing an SVG, re-render it with a
-transparent background at 1024×1024 and 36×36, e.g.
+**Icons and DMG background:** `assets/icon.svg` (app icon), `assets/tray.svg` (menu bar) and
+`assets/dmg-background.svg` are the sources; the PNGs next to them are what the build uses.
+After editing an SVG, re-render it (transparent background, 1024×1024 for the icon, 36×36 for
+the menu bar, 660×400 and 1320×800 for the DMG), e.g.
 `rsvg-convert -w 1024 -h 1024 assets/icon.svg -o assets/AppIcon.png`.
 
 Code comments are in Portuguese.
@@ -112,7 +114,8 @@ Code comments are in Portuguese.
 | `src/login.rs` | launch at login (LaunchAgent) |
 | `src/reopen.rs` | launching the app again opens the editor |
 | `src/icons.rs`, `src/theme.rs` | icons drawn in code, and colors |
-| `assets/` | app and menu bar icons (SVG sources + PNGs) |
+| `assets/` | app and menu bar icons, DMG background (SVG sources + PNGs) |
+| `packaging/` | `Info.plist` and the DMG window layout |
 | `site/` | the project website on GitHub Pages |
 
 ## License

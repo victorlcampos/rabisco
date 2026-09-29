@@ -12,8 +12,8 @@ document.querySelectorAll('button.copy').forEach((button) => {
   });
 });
 
-// Shows the latest release's version. Until a release is published, the main
-// button points to building from source instead.
+// Shows the latest release's version and links to its download. Until a release is
+// published, the main button points to building from source instead.
 fetch('https://api.github.com/repos/victorlcampos/rabisco/releases/latest', {
   headers: { Accept: 'application/vnd.github+json' },
 })
@@ -30,6 +30,15 @@ fetch('https://api.github.com/repos/victorlcampos/rabisco/releases/latest', {
   })
   .then((release) => {
     if (!release || !release.tag_name) return;
+    // Aponta os links de download para o arquivo que a release realmente tem
+    // (o .dmg; releases antigas só tinham o .zip).
+    const assets = release.assets || [];
+    const asset = assets.find((a) => a.name.endsWith('.dmg')) || assets.find((a) => a.name.endsWith('.zip'));
+    if (asset) {
+      document.querySelectorAll('a[href$="/releases/latest/download/Rabisco.dmg"]').forEach((link) => {
+        link.href = asset.browser_download_url;
+      });
+    }
     const note = document.getElementById('download-note');
     note.textContent = `${release.tag_name} · ${note.textContent}`;
   })

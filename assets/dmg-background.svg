@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="660" height="400" viewBox="0 0 660 400">
+  <!-- Fundo da janela do DMG. O tom médio é de propósito: o Finder escreve o nome dos
+       ícones em preto no tema claro e em branco no escuro, e os dois precisam ser legíveis.
+       Os ícones ficam em (180, 180) e (480, 180); veja packaging/dmg-settings.py. -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#65798a"/>
+      <stop offset="1" stop-color="#5a6e7e"/>
+    </linearGradient>
+    <radialGradient id="glow" cx=".5" cy=".38" r=".62">
+      <stop offset="0" stop-color="#fff" stop-opacity=".1"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="660" height="400" fill="url(#bg)"/>
+  <rect width="660" height="400" fill="url(#glow)"/>
+
+  <!-- seta rabiscada, do app para Aplicativos -->
+  <path d="M268 176C300 138 356 136 388 168" fill="none" stroke="#ff6a5f" stroke-width="7" stroke-linecap="round"/>
+  <path d="M370.6 163.4 388 168 383.4 150.6" fill="none" stroke="#ff6a5f" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <text x="330" y="340" text-anchor="middle" fill="#fff" font-size="16" font-weight="600"
+        font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', sans-serif">Drag Rabisco into Applications</text>
+</svg>

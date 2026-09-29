@@ -41,12 +41,12 @@ jobs:
           path: target/e2e/
           if-no-files-found: ignore
 
-      - name: Empacota o Rabisco.app
+      - name: Empacota o Rabisco.app e o Rabisco.dmg
         run: |
           ./scripts/bundle.sh
-          ditto -c -k --keepParent target/Rabisco.app target/Rabisco.zip
+          ./scripts/dmg.sh
 
       - uses: actions/upload-artifact@v7
         with:
-          name: Rabisco.app
-          path: target/Rabisco.zip
+          name: Rabisco.dmg
+          path: target/Rabisco.dmg
