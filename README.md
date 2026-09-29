@@ -1,44 +1,52 @@
+<p align="center"><img src="assets/AppIcon.png" width="160" alt="Rabisco icon: a dog painting a scribble with its tail"></p>
+
 # Rabisco
 
-Rabisque em cima da imagem que está no clipboard, no estilo do editor de fotos do
-WhatsApp Web, e devolva o resultado para o clipboard. App nativo para macOS, em Rust.
+Scribble on whatever image is on your clipboard, in the style of WhatsApp Web's photo
+editor, and send it right back to the clipboard. A native macOS menu bar app, written in Rust.
 
-**Site:** [victorlcampos.github.io/rabisco](https://victorlcampos.github.io/rabisco/)
+*Rabisco* is Portuguese for "scribble", and *rabo* means "tail": hence the dog that paints
+with its tail.
+
+**Website:** [victorlcampos.github.io/rabisco](https://victorlcampos.github.io/rabisco/)
 
 <p align="center">
-  <img src="docs/editor.png" width="49%" alt="Editor no tema claro">
-  <img src="docs/editor-escuro.png" width="49%" alt="Editor no tema escuro">
+  <img src="docs/editor-light.png" width="49%" alt="The editor in the light theme">
+  <img src="docs/editor-dark.png" width="49%" alt="The editor in the dark theme">
 </p>
 
-## Como usar
+## Usage
 
-1. Copie uma imagem: um print com **⌃⇧⌘4** (vai direto para o clipboard), "Copiar
-   imagem" no navegador ou **⌘C** num arquivo de imagem no Finder.
-2. Aperte **⌃⇧⌘E** (control + shift + command + E). É o mesmo trio do print para o
-   clipboard: tira o print, troca o 4 pelo E e já está rabiscando.
-3. Rabisque. A cor vem da paleta (a setinha abre mais cores) e a espessura, das bolinhas.
-4. **↩** (ou o botão verde) copia a imagem rabiscada para o clipboard. É só colar com ⌘V.
+1. Copy an image: a screenshot with **⌃⇧⌘4** (it goes straight to the clipboard), "Copy
+   Image" in a browser, or **⌘C** on an image file in Finder.
+2. Press **⌃⇧⌘E** (control + shift + command + E). It's the same trio as the
+   screenshot-to-clipboard shortcut: take the screenshot, swap the 4 for an E and you're
+   already scribbling.
+3. Scribble. Pick a color from the palette (the little arrow opens more colors) and a stroke
+   width from the dots.
+4. **↩** (or the green button) copies the scribbled image to the clipboard. Just paste it with ⌘V.
 
-| Tecla | Ação |
+| Key | Action |
 | --- | --- |
-| ↩, ⌘S ou ⌘C | copia para o clipboard e fecha |
-| esc ou ⌘W | descarta (se já tem rabisco, pede um segundo esc) |
-| ⌘Z | desfaz |
-| ⇧⌘Z ou ⌘Y | refaz |
+| ↩, ⌘S or ⌘C | copy to the clipboard and close |
+| esc or ⌘W | discard (if you've drawn something, it asks for a second esc) |
+| ⌘Z | undo |
+| ⇧⌘Z or ⌘Y | redo |
 
-O editor também abre pelo lápis na barra de menus ou abrindo o app pelo Spotlight/Finder.
-Por enquanto a única ferramenta é o lápis.
+The editor also opens from the dog in the menu bar, or by launching the app from Spotlight
+or Finder. For now the pencil is the only tool, and the app's interface is in Brazilian
+Portuguese.
 
-## Instalação
+## Install
 
-Precisa de macOS 12 ou mais novo, em Mac com Apple Silicon ou Intel.
+Requires macOS 12 or later, on Apple silicon or Intel.
 
-**Baixando:** pegue o `Rabisco.zip` da [última release](https://github.com/victorlcampos/rabisco/releases/latest),
-arraste o app para **Aplicativos** e abra por lá. Como ele não é assinado pela Apple, na primeira
-vez o macOS bloqueia a abertura: vá em **Ajustes do Sistema → Privacidade e Segurança** e clique
-em **Abrir Mesmo Assim**.
+**Download:** grab `Rabisco.zip` from the [latest release](https://github.com/victorlcampos/rabisco/releases/latest),
+drag the app to **Applications** and open it from there. Since it isn't signed by Apple,
+macOS blocks the first launch: go to **System Settings → Privacy & Security** and click
+**Open Anyway**.
 
-**Compilando:** precisa do [Rust](https://rustup.rs) (o `rust-toolchain.toml` escolhe a versão).
+**Build from source:** requires [Rust](https://rustup.rs) (`rust-toolchain.toml` picks the version).
 
 ```sh
 git clone https://github.com/victorlcampos/rabisco.git
@@ -46,57 +54,67 @@ cd rabisco
 ./scripts/install.sh
 ```
 
-O script compila, instala em `/Applications/Rabisco.app`, liga o início junto com o Mac
-(um LaunchAgent em `~/Library/LaunchAgents`) e deixa o app rodando na barra de menus.
-O início automático pode ser desligado no menu do lápis → **Abrir ao iniciar o Mac**.
-Para remover tudo: `./scripts/uninstall.sh`.
+The script builds the app, installs it as `/Applications/Rabisco.app`, turns on launch at
+login (a LaunchAgent in `~/Library/LaunchAgents`) and leaves it running in the menu bar.
+Launch at login can be turned off from the menu bar menu (*Abrir ao iniciar o Mac*).
+To remove everything: `./scripts/uninstall.sh`.
 
-## Como funciona
+## Under the hood
 
-- **Leitura do clipboard:** arquivo de imagem copiado no Finder (JPEG respeitando a
-  rotação do EXIF, HEIC e outros), PNG, TIFF e qualquer formato que o macOS saiba abrir.
-- **Escrita:** PNG e TIFF na resolução original, preservando o DPI; prints Retina colam
-  no tamanho certo no Notes, Keynote etc.
-- **Traços** ficam guardados como vetores e são redesenhados na resolução original na
-  hora de copiar, com o mesmo código que desenha na tela.
-- **Atalho global** via `RegisterEventHotKey`: não precisa de permissão de Acessibilidade.
-- **Leve em repouso:** a janela e a GPU só existem enquanto o editor está aberto.
+- **Reading the clipboard:** an image file copied in Finder (JPEG honoring its EXIF
+  rotation, HEIC and more), PNG, TIFF, and any other format macOS can open.
+- **Writing:** PNG and TIFF at the original resolution, keeping the DPI, so Retina
+  screenshots paste at the right size in Notes, Keynote and friends.
+- **Strokes** are stored as vectors and redrawn at the original resolution when copying,
+  by the same code that draws them on screen.
+- **Global shortcut** via `RegisterEventHotKey`: no Accessibility permission needed.
+- **Light when idle:** the window and the GPU only exist while the editor is open.
 - **Log:** `~/Library/Logs/Rabisco.log`.
 
-## Desenvolvimento
+## Development
 
 ```sh
-cargo test              # testes unitários
-./scripts/e2e.sh        # teste de ponta a ponta (substitui o conteúdo do clipboard!)
-./scripts/bundle.sh     # gera target/Rabisco.app (UNIVERSAL=1 para Apple Silicon + Intel)
+cargo test              # unit tests
+./scripts/e2e.sh        # end-to-end test (replaces your clipboard contents!)
+./scripts/bundle.sh     # builds target/Rabisco.app (UNIVERSAL=1 for Apple silicon + Intel)
 ```
 
-O teste de ponta a ponta (`src/selftest.rs`, feature `selftest`) abre o editor, rabisca
-por eventos injetados na própria interface, tira prints da janela (renderizados pela GPU,
-sem precisar de permissão de gravação de tela), aperta ↩ e confere o clipboard pixel a
-pixel. Também cobre o estado "sem imagem no clipboard". Roda no GitHub Actions (macOS 15)
-a cada push; os prints e o `Rabisco.app` ficam como artefatos do workflow.
+The end-to-end test (`src/selftest.rs`, behind the `selftest` feature) opens the editor,
+scribbles through events injected into the UI itself, takes screenshots of the window
+(rendered by the GPU, so no Screen Recording permission is needed), presses ↩ and checks
+the clipboard pixel by pixel. It also covers the "no image on the clipboard" state. It runs
+on GitHub Actions (macOS 15) on every push; the screenshots and `Rabisco.app` are uploaded
+as workflow artifacts.
 
-**Publicar uma versão:** atualize o `version` do `Cargo.toml` e crie a tag correspondente
-(`git tag v0.1.0 && git push origin v0.1.0`). O workflow *Release* gera o `Rabisco.zip`
-universal e cria a release; o botão de download do site aponta sempre para a mais recente.
+**Releasing:** bump `version` in `Cargo.toml` and push a matching tag
+(`git tag v0.1.0 && git push origin v0.1.0`). The *Release* workflow builds a universal
+`Rabisco.zip` and creates the release; the website's download button always points to the
+latest one.
 
-**Site:** a pasta `site/` (HTML, CSS e um pouco de JS, sem build) é publicada no GitHub Pages
-pelo workflow *Site* a cada push que mexer nela.
+**Website:** `site/` (plain HTML, CSS and a little JS, no build step) is published to GitHub
+Pages by the *Site* workflow on every push that touches it.
 
-| Arquivo | O que faz |
+**Icons:** `assets/icon.svg` (app icon) and `assets/tray.svg` (menu bar) are the sources; the
+PNGs next to them are what the build uses. After editing an SVG, re-render it with a
+transparent background at 1024×1024 and 36×36, e.g.
+`rsvg-convert -w 1024 -h 1024 assets/icon.svg -o assets/AppIcon.png`.
+
+Code comments are in Portuguese.
+
+| File | What it does |
 | --- | --- |
-| `src/main.rs` | ciclo de vida: barra de menus, abrir e fechar o editor |
-| `src/agent.rs` | ícone e menu da barra de menus, atalho global |
-| `src/window.rs` | janela do editor (winit + egui + wgpu/Metal) |
-| `src/editor.rs` | interface: lápis, paleta, espessuras, desfazer/refazer |
-| `src/canvas.rs` | traços, desfazer/refazer e renderização (tiny-skia) |
-| `src/clipboard.rs` | NSPasteboard, PNG/TIFF e DPI |
-| `src/login.rs` | início junto com o Mac (LaunchAgent) |
-| `src/reopen.rs` | abrir o app de novo abre o editor |
-| `src/icons.rs`, `src/theme.rs` | ícones desenhados em código e cores |
-| `site/` | página do projeto no GitHub Pages |
+| `src/main.rs` | app lifecycle: menu bar, opening and closing the editor |
+| `src/agent.rs` | menu bar icon and menu, global shortcut |
+| `src/window.rs` | editor window (winit + egui + wgpu/Metal) |
+| `src/editor.rs` | UI: pencil, palette, stroke widths, undo/redo |
+| `src/canvas.rs` | strokes, undo/redo and rendering (tiny-skia) |
+| `src/clipboard.rs` | NSPasteboard, PNG/TIFF and DPI |
+| `src/login.rs` | launch at login (LaunchAgent) |
+| `src/reopen.rs` | launching the app again opens the editor |
+| `src/icons.rs`, `src/theme.rs` | icons drawn in code, and colors |
+| `assets/` | app and menu bar icons (SVG sources + PNGs) |
+| `site/` | the project website on GitHub Pages |
 
-## Licença
+## License
 
 [MIT](LICENSE)

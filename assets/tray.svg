@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
+  <!-- Ícone "template" da barra de menus: a silhueta do cachorro do ícone do app.
+       O macOS usa só a transparência e pinta de preto ou branco conforme o tema. -->
+  <defs>
+    <mask id="recortes" maskUnits="userSpaceOnUse" x="0" y="0" width="36" height="36">
+      <rect width="36" height="36" fill="#fff"/>
+      <g transform="translate(-9.7 -6.4) scale(.0486)">
+        <!-- olho e contorno da orelha vazados -->
+        <circle cx="764" cy="398" r="28" fill="#000"/>
+        <path d="M690 312C628 316 590 378 600 468C604 512 646 526 668 490C694 448 712 372 690 312Z" fill="none" stroke="#000" stroke-width="26"/>
+      </g>
+    </mask>
+  </defs>
+  <g mask="url(#recortes)">
+    <g transform="translate(-9.7 -6.4) scale(.0486)">
+      <!-- no tamanho da barra de menus o laço do rabisco vira borrão: aqui ele é uma onda -->
+      <path d="M262 372C244 306 292 252 348 282C400 310 428 252 486 236"
+            fill="none" stroke="#000" stroke-width="48" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="398" y="636" width="56" height="152" rx="28"/>
+      <rect x="556" y="636" width="56" height="152" rx="28"/>
+      <path d="M352 548C300 520 262 456 262 380" fill="none" stroke="#000" stroke-width="56" stroke-linecap="round"/>
+      <path d="M345 530C420 505 540 505 612 510C640 512 655 498 668 478L760 520C772 566 760 630 716 664C690 684 660 700 620 704C550 708 460 700 400 706C350 712 318 690 316 640C314 590 322 548 345 530Z"/>
+      <rect x="340" y="648" width="62" height="146" rx="31"/>
+      <rect x="598" y="648" width="62" height="146" rx="31"/>
+      <circle cx="720" cy="424" r="122"/>
+      <ellipse cx="818" cy="468" rx="82" ry="58"/>
+    </g>
+  </g>
+</svg>

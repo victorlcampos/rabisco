@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Rabisco: um cachorro pintando um rabisco com a ponta do rabo ("rabo" + "risco"). -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4ce08b"/>
+      <stop offset="1" stop-color="#0e9a4d"/>
+    </linearGradient>
+    <filter id="icon-shadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#000" flood-opacity=".22"/>
+    </filter>
+    <filter id="dog-shadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#064d27" flood-opacity=".25"/>
+    </filter>
+  </defs>
+
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)" filter="url(#icon-shadow)"/>
+
+  <!-- o rabisco, pintado pela ponta do rabo -->
+  <path d="M262 370C236 316 258 262 312 256C370 250 392 312 352 338C314 362 290 304 340 276C392 248 430 300 474 290C518 280 530 236 566 226"
+        fill="none" stroke="#ff5a4f" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="244" cy="488" r="11" fill="#ff5a4f"/>
+
+  <g filter="url(#dog-shadow)">
+    <!-- pernas do lado de lá -->
+    <rect x="398" y="636" width="56" height="152" rx="28" fill="#dbe5df"/>
+    <rect x="556" y="636" width="56" height="152" rx="28" fill="#dbe5df"/>
+    <!-- rabo -->
+    <path d="M352 548C300 520 262 456 262 380" fill="none" stroke="#fff" stroke-width="46" stroke-linecap="round"/>
+    <!-- corpo, peito e pescoço numa silhueta só -->
+    <path d="M345 530C420 505 540 505 612 510C640 512 655 498 668 478L760 520C772 566 760 630 716 664C690 684 660 700 620 704C550 708 460 700 400 706C350 712 318 690 316 640C314 590 322 548 345 530Z" fill="#fff"/>
+    <!-- pernas do lado de cá -->
+    <rect x="340" y="648" width="62" height="146" rx="31" fill="#fff"/>
+    <rect x="598" y="648" width="62" height="146" rx="31" fill="#fff"/>
+    <!-- cabeça e focinho -->
+    <circle cx="720" cy="424" r="122" fill="#fff"/>
+    <ellipse cx="818" cy="468" rx="82" ry="58" fill="#fff"/>
+  </g>
+  <!-- ponta do rabo molhada de tinta -->
+  <path d="M263 430C262 412 262 396 262 380" fill="none" stroke="#ff5a4f" stroke-width="50" stroke-linecap="round"/>
+  <!-- orelha -->
+  <path d="M690 312C628 316 590 378 600 468C604 512 646 526 668 490C694 448 712 372 690 312Z" fill="#e3a15f"/>
+  <!-- olho, focinho e boca -->
+  <circle cx="764" cy="398" r="18" fill="#1f2c34"/>
+  <circle cx="770" cy="392" r="6" fill="#fff"/>
+  <ellipse cx="888" cy="450" rx="25" ry="19" fill="#1f2c34"/>
+  <path d="M876 492Q856 506 834 496" fill="none" stroke="#1f2c34" stroke-width="8" stroke-linecap="round"/>
+</svg>

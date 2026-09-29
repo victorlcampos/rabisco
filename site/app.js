@@ -1,27 +1,27 @@
-// Botões "Copiar" dos blocos de comando.
+// "Copy" buttons on the command blocks.
 document.querySelectorAll('button.copy').forEach((button) => {
   button.addEventListener('click', async () => {
     const text = document.getElementById(button.dataset.copy).textContent;
     try {
       await navigator.clipboard.writeText(text);
-      button.textContent = 'Copiado!';
+      button.textContent = 'Copied!';
     } catch {
-      button.textContent = 'Selecione e copie';
+      button.textContent = 'Select and copy';
     }
-    setTimeout(() => { button.textContent = 'Copiar'; }, 1800);
+    setTimeout(() => { button.textContent = 'Copy'; }, 1800);
   });
 });
 
-// Mostra a versão da última release. Enquanto não houver nenhuma publicada,
-// o botão principal leva para a instalação a partir do código.
+// Shows the latest release's version. Until a release is published, the main
+// button points to building from source instead.
 fetch('https://api.github.com/repos/victorlcampos/rabisco/releases/latest', {
   headers: { Accept: 'application/vnd.github+json' },
 })
   .then((response) => {
     if (response.status === 404) {
       const button = document.getElementById('download');
-      button.href = '#instalar';
-      button.querySelector('.label').textContent = 'Instalar no macOS';
+      button.href = '#install';
+      button.querySelector('.label').textContent = 'Install on macOS';
       document.getElementById('card-download').classList.add('hidden');
       document.querySelector('.install-grid').classList.add('single');
       return null;
@@ -31,6 +31,6 @@ fetch('https://api.github.com/repos/victorlcampos/rabisco/releases/latest', {
   .then((release) => {
     if (!release || !release.tag_name) return;
     const note = document.getElementById('download-note');
-    note.textContent = `Versão ${release.tag_name.replace(/^v/, '')} · ${note.textContent}`;
+    note.textContent = `Version ${release.tag_name.replace(/^v/, '')} · ${note.textContent}`;
   })
   .catch(() => {});

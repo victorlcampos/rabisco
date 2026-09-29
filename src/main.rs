@@ -228,15 +228,6 @@ fn is_installed_bundle() -> bool {
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
 
-    // Usado pelo script de empacotamento: rabisco --render-icon saida.png 1024
-    if args.first().map(String::as_str) == Some("--render-icon") {
-        let out = args
-            .get(1)
-            .expect("uso: rabisco --render-icon <saida.png> [tamanho]");
-        let size = args.get(2).and_then(|s| s.parse().ok()).unwrap_or(1024);
-        std::fs::write(out, icons::app_icon_png(size)).expect("não consegui salvar o ícone");
-        return;
-    }
     // Usados pelos scripts de instalação: liga/desliga o início com o Mac e sai.
     if let Some(flag @ ("--enable-login" | "--disable-login")) = args.first().map(String::as_str) {
         let enable = flag == "--enable-login";

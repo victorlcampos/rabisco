@@ -176,7 +176,6 @@ h1 { font-size: clamp(40px, 5vw, 58px); font-weight: 800; letter-spacing: -.035e
 .d-titlebar { fill: var(--d-titlebar); }
 .d-wtitle { fill: var(--d-title); font-size: 13px; font-weight: 600; }
 .d-sep { stroke: var(--d-sep); }
-.d-hint { fill: var(--muted); font-size: 12px; }
 .d-tool { fill: var(--d-tool); stroke: var(--d-ring); stroke-width: 2; }
 .d-icon path, .d-chev { fill: none; stroke: var(--d-icon); stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
 .d-white { fill: #fff; stroke: var(--d-white-edge); stroke-width: 1.2; }
@@ -326,6 +325,12 @@ h1 { font-size: clamp(40px, 5vw, 58px); font-weight: 800; letter-spacing: -.035e
 .install-foot { margin-top: 24px; color: var(--muted); font-size: 15px; }
 .install-foot code { font: 14px ui-monospace, "SF Mono", Menlo, monospace; color: var(--text-2); }
 
+/* Por que um cachorro? */
+.why { display: flex; align-items: center; gap: 28px; padding-top: 72px; padding-bottom: 72px; }
+.why img { flex: none; filter: drop-shadow(0 8px 14px rgba(17, 27, 33, .16)); }
+.why h2 { font-size: 26px; margin-bottom: 8px; }
+.why p { color: var(--text-2); font-size: 17px; max-width: 34em; }
+
 /* Rodapé */
 .footer { border-top: 1px solid var(--line); padding: 28px 0 36px; font-size: 14px; color: var(--muted); }
 .footer-inner { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; align-items: center; }
@@ -351,4 +356,5 @@ h1 { font-size: clamp(40px, 5vw, 58px); font-weight: 800; letter-spacing: -.035e
   .step-list, .feature-grid, .shots { grid-template-columns: 1fr; }
   .shortcuts td:first-child { width: auto; white-space: normal; }
   .card { padding: 22px; }
+  .why { flex-direction: column; text-align: center; gap: 18px; padding-top: 56px; padding-bottom: 56px; }
 }

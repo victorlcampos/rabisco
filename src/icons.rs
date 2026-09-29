@@ -1,13 +1,9 @@
-//! Ícones desenhados em código: os da interface (com o `Painter` do egui),
-//! o da barra de menus e o ícone do app (rasterizados com tiny-skia).
+//! Ícones da interface, desenhados em código com o `Painter` do egui, e o ícone
+//! da barra de menus. O ícone do app fica em `assets/` (SVG + PNG).
 
 use std::f32::consts::PI;
 
 use egui::{Color32, Painter, Pos2, Shape, Stroke, Vec2, vec2};
-use tiny_skia::{
-    Color, FillRule, GradientStop, LineCap, LineJoin, LinearGradient, Paint, Path, PathBuilder,
-    Pixmap, Point, SpreadMode, Transform,
-};
 
 /// Grid 24x24 (o mesmo dos ícones do Lucide) projetado num quadrado da tela.
 struct Grid {
@@ -141,208 +137,13 @@ pub fn image(painter: &Painter, center: Pos2, size: f32, color: Color32) {
     );
 }
 
-// ---------------------------------------------------------------------------
-// Rasterizados com tiny-skia
-
-fn path(points: &[(f32, f32)], close: bool) -> Option<Path> {
-    let mut pb = PathBuilder::new();
-    let (x, y) = *points.first()?;
-    pb.move_to(x, y);
-    for &(x, y) in &points[1..] {
-        pb.line_to(x, y);
-    }
-    if close {
-        pb.close();
-    }
-    pb.finish()
-}
-
-fn solid(r: u8, g: u8, b: u8, a: u8) -> Paint<'static> {
-    let mut paint = Paint::default();
-    paint.set_color(Color::from_rgba8(r, g, b, a));
-    paint.anti_alias = true;
-    paint
-}
-
-fn round_stroke(width: f32) -> tiny_skia::Stroke {
-    tiny_skia::Stroke {
-        width,
-        line_cap: LineCap::Round,
-        line_join: LineJoin::Round,
-        ..Default::default()
-    }
-}
-
-/// Ícone "template" da barra de menus (o macOS pinta de preto ou branco).
+/// Ícone "template" da barra de menus: a silhueta do cachorro de `assets/tray.svg`,
+/// renderizada em `assets/tray.png` (36×36, 18 pt em telas Retina). O macOS usa só a
+/// transparência e pinta de preto ou branco conforme o tema.
 pub fn tray_icon() -> tray_icon::Icon {
-    const SIZE: u32 = 36;
-    let mut pm = Pixmap::new(SIZE, SIZE).expect("pixmap do ícone");
-    let scale = SIZE as f32 / 24.0;
-    let ts = Transform::from_scale(scale, scale);
-    let (outline, band) = pencil_outline();
-    let outline: Vec<(f32, f32)> = outline.iter().map(|v| (v.x, v.y)).collect();
-    let ink = solid(0, 0, 0, 255);
-    let stroke = round_stroke(1.75);
-    if let Some(p) = path(&outline, true) {
-        pm.stroke_path(&p, &ink, &stroke, ts, None);
-    }
-    if let Some(p) = path(&[(band[0].x, band[0].y), (band[1].x, band[1].y)], false) {
-        pm.stroke_path(&p, &ink, &stroke, ts, None);
-    }
-    tray_icon::Icon::from_rgba(pm.take_demultiplied(), SIZE, SIZE).expect("ícone da barra de menus")
-}
-
-fn rounded_rect(x: f32, y: f32, w: f32, h: f32, r: f32) -> Option<Path> {
-    let k = 0.552_284_8 * r;
-    let mut pb = PathBuilder::new();
-    pb.move_to(x + r, y);
-    pb.line_to(x + w - r, y);
-    pb.cubic_to(x + w - r + k, y, x + w, y + r - k, x + w, y + r);
-    pb.line_to(x + w, y + h - r);
-    pb.cubic_to(x + w, y + h - r + k, x + w - r + k, y + h, x + w - r, y + h);
-    pb.line_to(x + r, y + h);
-    pb.cubic_to(x + r - k, y + h, x, y + h - r + k, x, y + h - r);
-    pb.line_to(x, y + r);
-    pb.cubic_to(x, y + r - k, x + r - k, y, x + r, y);
-    pb.close();
-    pb.finish()
-}
-
-/// Ícone do app (quadrado verde com um lápis e um rabisco), como PNG.
-pub fn app_icon_png(size: u32) -> Vec<u8> {
-    let mut pm = Pixmap::new(size, size).expect("pixmap do ícone");
-    let s = size as f32 / 1024.0;
-    let canvas = Transform::from_scale(s, s);
-
-    // Sombra suave sob o "squircle".
-    for i in 0..12 {
-        let spread = i as f32 * 2.5;
-        let alpha = (14.0 * (1.0 - i as f32 / 12.0)) as u8;
-        if let Some(p) = rounded_rect(
-            100.0 - spread,
-            112.0 - spread,
-            824.0 + 2.0 * spread,
-            824.0 + 2.0 * spread,
-            185.0 + spread,
-        ) {
-            pm.fill_path(&p, &solid(0, 0, 0, alpha), FillRule::Winding, canvas, None);
-        }
-    }
-
-    let body = rounded_rect(100.0, 100.0, 824.0, 824.0, 185.0).expect("fundo do ícone");
-    let gradient = LinearGradient::new(
-        Point::from_xy(512.0, 100.0),
-        Point::from_xy(512.0, 924.0),
-        vec![
-            GradientStop::new(0.0, Color::from_rgba8(0x4c, 0xe0, 0x8b, 255)),
-            GradientStop::new(1.0, Color::from_rgba8(0x0e, 0x9a, 0x4d, 255)),
-        ],
-        SpreadMode::Pad,
-        Transform::identity(),
-    )
-    .expect("gradiente");
-    let paint = Paint {
-        shader: gradient,
-        anti_alias: true,
-        ..Default::default()
-    };
-    pm.fill_path(&body, &paint, FillRule::Winding, canvas, None);
-
-    // O rabisco, terminando na ponta do lápis.
-    let mut pb = PathBuilder::new();
-    pb.move_to(215.0, 735.0);
-    pb.cubic_to(250.0, 655.0, 330.0, 650.0, 315.0, 735.0);
-    pb.cubic_to(300.0, 820.0, 390.0, 800.0, 440.0, 690.0);
-    if let Some(p) = pb.finish() {
-        pm.stroke_path(
-            &p,
-            &solid(255, 255, 255, 240),
-            &round_stroke(44.0),
-            canvas,
-            None,
-        );
-    }
-
-    // Lápis desenhado na horizontal (ponta em x = 0) e girado 45°.
-    let pencil = Transform::from_rotate(-45.0)
-        .post_translate(440.0, 690.0)
-        .post_scale(s, s);
-    let len = 480.0;
-    let half = 72.0;
-    let cone = 125.0;
-    let lead = 42.0;
-    let fill = |pm: &mut Pixmap, pts: &[(f32, f32)], rgb: (u8, u8, u8)| {
-        if let Some(p) = path(pts, true) {
-            pm.fill_path(
-                &p,
-                &solid(rgb.0, rgb.1, rgb.2, 255),
-                FillRule::Winding,
-                pencil,
-                None,
-            );
-        }
-    };
-    let lead_half = half * lead / cone;
-    let ferrule = len - 110.0;
-    fill(
-        &mut pm,
-        &[(0.0, 0.0), (cone, -half), (cone, half)],
-        (0xf7, 0xd9, 0xa8),
-    );
-    fill(
-        &mut pm,
-        &[(0.0, 0.0), (lead, -lead_half), (lead, lead_half)],
-        (0x26, 0x32, 0x38),
-    );
-    fill(
-        &mut pm,
-        &[
-            (cone, -half),
-            (ferrule, -half),
-            (ferrule, half),
-            (cone, half),
-        ],
-        (0xff, 0xff, 0xff),
-    );
-    fill(
-        &mut pm,
-        &[(cone, 22.0), (ferrule, 22.0), (ferrule, half), (cone, half)],
-        (0xe3, 0xea, 0xee),
-    );
-    // Borracha arredondada; a ponteira de metal, desenhada por cima, esconde o lado esquerdo.
-    if let Some(p) = rounded_rect(ferrule, -half, len - ferrule, 2.0 * half, 30.0) {
-        pm.fill_path(
-            &p,
-            &solid(0xff, 0x8a, 0x80, 255),
-            FillRule::Winding,
-            pencil,
-            None,
-        );
-    }
-    fill(
-        &mut pm,
-        &[
-            (ferrule, -half),
-            (len - 72.0, -half),
-            (len - 72.0, half),
-            (ferrule, half),
-        ],
-        (0xb0, 0xbe, 0xc5),
-    );
-
-    encode_png(&pm)
-}
-
-fn encode_png(pm: &Pixmap) -> Vec<u8> {
-    let mut out = Vec::new();
-    {
-        let mut enc = png::Encoder::new(&mut out, pm.width(), pm.height());
-        enc.set_color(png::ColorType::Rgba);
-        enc.set_depth(png::BitDepth::Eight);
-        let mut writer = enc.write_header().expect("cabeçalho PNG");
-        writer
-            .write_image_data(&pm.clone().take_demultiplied())
-            .expect("dados PNG");
-    }
-    out
+    let image = image::load_from_memory(include_bytes!("../assets/tray.png"))
+        .expect("assets/tray.png")
+        .to_rgba8();
+    let (width, height) = image.dimensions();
+    tray_icon::Icon::from_rgba(image.into_raw(), width, height).expect("ícone da barra de menus")
 }

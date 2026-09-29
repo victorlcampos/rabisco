@@ -23,10 +23,11 @@ fi
 rm -rf "$APP" "$ICONSET"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$ICONSET"
 
-# O ícone é desenhado pelo próprio binário, em todos os tamanhos que o macOS usa.
+# Ícone: assets/AppIcon.png (1024 px, renderizado de assets/icon.svg) em todos os
+# tamanhos que o macOS usa.
 for size in 16 32 128 256 512; do
-  "$BIN" --render-icon "$ICONSET/icon_${size}x${size}.png" "$size"
-  "$BIN" --render-icon "$ICONSET/icon_${size}x${size}@2x.png" "$((size * 2))"
+  sips -z "$size" "$size" assets/AppIcon.png --out "$ICONSET/icon_${size}x${size}.png" >/dev/null
+  sips -z "$((size * 2))" "$((size * 2))" assets/AppIcon.png --out "$ICONSET/icon_${size}x${size}@2x.png" >/dev/null
 done
 iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/AppIcon.icns"
 
