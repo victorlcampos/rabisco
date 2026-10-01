@@ -2,6 +2,7 @@
 //!
 //! Fica na barra de menus. ⌃⇧E abre o editor com a imagem que estiver no
 //! clipboard; ↩ (ou o botão verde) copia o resultado de volta; esc descarta.
+//! `rabisco update` (ou *Procurar atualização*, no menu) instala a versão mais nova.
 
 mod agent;
 mod canvas;
@@ -15,9 +16,12 @@ mod reopen;
 #[cfg(feature = "selftest")]
 mod selftest;
 mod theme;
+mod update;
 mod window;
 
 use std::fs::File;
+use std::io::Write;
+use std::path::PathBuf;
 use std::time::{Duration, Instant};
 
 use objc2::rc::Retained;
@@ -34,6 +38,14 @@ use window::EditorWindow;
 pub enum UserEvent {
     OpenEditor,
     Menu(String),
+    Update(UpdateStep),
+}
+
+/// O que a atualização pedida pelo menu, que corre numa thread à parte, conta de volta.
+#[derive(Debug)]
+pub enum UpdateStep {
+    Downloading(cerne::update::Version),
+    Done(Result<update::Outcome, cerne::update::Error>),
 }
 
 struct App {
@@ -44,6 +56,10 @@ struct App {
     prefs: prefs::Prefs,
     open_at_start: bool,
     clear_status_at: Option<Instant>,
+    /// Uma atualização pedida pelo menu está em andamento.
+    updating: bool,
+    /// A versão nova já está instalada e espera o editor fechar para reabrir o Rabisco.
+    reopen_pending: bool,
 }
 
 impl App {
@@ -100,9 +116,77 @@ impl App {
     }
 
     fn show_status(&mut self, text: &str) {
+        self.show_status_for(text, Some(Duration::from_millis(1800)));
+    }
+
+    /// Mostra `text` ao lado do ícone por `time`, ou até o próximo aviso.
+    fn show_status_for(&mut self, text: &str, time: Option<Duration>) {
         if let Some(agent) = &self.agent {
             agent.set_status(Some(text));
-            self.clear_status_at = Some(Instant::now() + Duration::from_millis(1800));
+            self.clear_status_at = time.map(|time| Instant::now() + time);
+        }
+    }
+
+    /// Procura e instala a versão mais nova numa thread à parte, sem travar o menu nem o atalho.
+    fn check_update(&mut self) {
+        if self.updating || self.reopen_pending {
+            return;
+        }
+        let Some(bundle) = update::installed_bundle() else {
+            self.show_status_for("Só no app instalado", Some(Duration::from_secs(3)));
+            return;
+        };
+        self.updating = true;
+        self.show_status_for("Procurando…", None);
+        let proxy = self.proxy.clone();
+        std::thread::spawn(move || {
+            let result = update::update(&bundle, true, |version| {
+                let _ =
+                    proxy.send_event(UserEvent::Update(UpdateStep::Downloading(version.clone())));
+            });
+            let _ = proxy.send_event(UserEvent::Update(UpdateStep::Done(result)));
+        });
+    }
+
+    fn on_update(&mut self, event_loop: &ActiveEventLoop, step: UpdateStep) {
+        let shown = Some(Duration::from_secs(3));
+        match step {
+            UpdateStep::Downloading(version) => {
+                self.show_status_for(&format!("Baixando {version}…"), None);
+            }
+            UpdateStep::Done(Ok(update::Outcome::Installed(_))) => {
+                self.updating = false;
+                self.reopen_pending = true;
+                if self.editor.is_some() {
+                    self.show_status_for("Atualizado: reabre ao fechar o editor", None);
+                } else {
+                    self.reopen(event_loop);
+                }
+            }
+            UpdateStep::Done(Ok(_)) => {
+                self.updating = false;
+                self.show_status_for("Já está atualizado", shown);
+            }
+            UpdateStep::Done(Err(err)) => {
+                self.updating = false;
+                eprintln!("Erro ao atualizar: {err}");
+                self.show_status_for("Erro ao atualizar", shown);
+            }
+        }
+    }
+
+    /// Sai, deixando quem reabra o Rabisco já na versão nova assim que este processo terminar.
+    fn reopen(&mut self, event_loop: &ActiveEventLoop) {
+        let reopened = update::installed_bundle()
+            .ok_or_else(|| std::io::Error::other("o Rabisco.app sumiu"))
+            .and_then(|bundle| update::reopen_after(std::process::id(), &bundle));
+        match reopened {
+            Ok(()) => event_loop.exit(),
+            Err(err) => {
+                eprintln!("Não consegui reabrir o Rabisco: {err}");
+                self.reopen_pending = false;
+                self.show_status_for("Atualizado: reabra o Rabisco", None);
+            }
         }
     }
 
@@ -142,13 +226,15 @@ impl ApplicationHandler<UserEvent> for App {
             UserEvent::Menu(id) => match id.as_str() {
                 agent::MENU_EDIT => self.open_editor(event_loop),
                 agent::MENU_LOGIN => self.toggle_login(),
+                agent::MENU_UPDATE => self.check_update(),
                 agent::MENU_QUIT => event_loop.exit(),
                 _ => {}
             },
+            UserEvent::Update(step) => self.on_update(event_loop, step),
         }
     }
 
-    fn window_event(&mut self, _event_loop: &ActiveEventLoop, id: WindowId, event: WindowEvent) {
+    fn window_event(&mut self, event_loop: &ActiveEventLoop, id: WindowId, event: WindowEvent) {
         let Some(editor) = &mut self.editor else {
             return;
         };
@@ -157,6 +243,9 @@ impl ApplicationHandler<UserEvent> for App {
         }
         if let Some(action) = editor.on_event(&event) {
             self.close_editor(action);
+            if self.reopen_pending {
+                self.reopen(event_loop);
+            }
         }
     }
 
@@ -193,40 +282,51 @@ enum Lock {
     Unavailable,
 }
 
+pub fn lock_path() -> PathBuf {
+    prefs::support_dir().join("rabisco.lock")
+}
+
 /// Garante uma instância só (o atalho global não pode ser registrado duas vezes).
 fn single_instance() -> Lock {
     use std::os::fd::AsRawFd;
-    let dir = prefs::support_dir();
-    let _ = std::fs::create_dir_all(&dir);
+    let _ = std::fs::create_dir_all(prefs::support_dir());
     let Ok(file) = std::fs::OpenOptions::new()
         .create(true)
         .truncate(false)
         .write(true)
-        .open(dir.join("rabisco.lock"))
+        .open(lock_path())
     else {
         return Lock::Unavailable;
     };
     if unsafe { libc::flock(file.as_raw_fd(), libc::LOCK_EX | libc::LOCK_NB) } == 0 {
+        // O PID, para o `rabisco update` do terminal achar este processo e reabri-lo.
+        let _ = file.set_len(0);
+        let _ = write!(&file, "{}", std::process::id());
         Lock::Acquired(file)
     } else {
         Lock::Busy
     }
 }
 
-/// Rodando de dentro de um .app instalado? Fica de fora o `cargo run` e a cópia
-/// temporária que o Gatekeeper usa quando o app é aberto direto da pasta Downloads
-/// ("App Translocation"): um início automático apontando para ela quebraria.
-fn is_installed_bundle() -> bool {
-    std::env::current_exe()
-        .map(|p| {
-            let p = p.to_string_lossy();
-            p.contains(".app/Contents/MacOS/") && !p.contains("/AppTranslocation/")
-        })
-        .unwrap_or(false)
+/// Encerrado pelo SIGTERM (o que o `rabisco update` do terminal manda, e o `kill`), sai como
+/// quem escolheu Sair: com sucesso, e o launchd não o reabre por conta própria, na versão
+/// antiga, por cima de quem vai reabrir a nova.
+extern "C" fn quit_on_signal(_: libc::c_int) {
+    // SAFETY: _exit é seguro dentro de um tratador de sinal.
+    unsafe { libc::_exit(0) }
 }
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
+
+    match args.first().map(String::as_str) {
+        Some("--version" | "-V") => {
+            println!("rabisco {}", env!("CARGO_PKG_VERSION"));
+            return;
+        }
+        Some("update") => std::process::exit(update::cli(&args[1..])),
+        _ => {}
+    }
 
     // Usados pelos scripts de instalação: liga/desliga o início com o Mac e sai.
     if let Some(flag @ ("--enable-login" | "--disable-login")) = args.first().map(String::as_str) {
@@ -269,9 +369,12 @@ fn main() {
         }
         lock => lock,
     };
+    let handler: extern "C" fn(libc::c_int) = quit_on_signal;
+    // SAFETY: o tratador só chama _exit.
+    unsafe { libc::signal(libc::SIGTERM, handler as libc::sighandler_t) };
 
     let mut prefs = prefs::Prefs::load();
-    if is_installed_bundle() && !testing {
+    if update::installed_bundle().is_some() && !testing {
         if !prefs.login_configured {
             match login::enable() {
                 Ok(()) => {
@@ -299,6 +402,8 @@ fn main() {
         prefs,
         open_at_start: !background,
         clear_status_at: None,
+        updating: false,
+        reopen_pending: false,
     };
     if let Err(err) = event_loop.run_app(&mut app) {
         eprintln!("Erro no event loop: {err}");

@@ -58,6 +58,12 @@ login (a LaunchAgent in `~/Library/LaunchAgents`) and leaves it running in the m
 Launch at login can be turned off from the menu bar menu (*Abrir ao iniciar o Mac*).
 To remove everything: `./scripts/uninstall.sh`.
 
+**Update:** *Procurar atualização* in the menu bar menu downloads the latest release, checks
+it against the SHA-256 published with it, swaps it for the installed app in one step and
+reopens Rabisco in the new version (after you close the editor, if it is open). From a
+terminal: `/Applications/Rabisco.app/Contents/MacOS/rabisco update` (`--check` only tells
+whether there is a newer one).
+
 ## Under the hood
 
 - **Reading the clipboard:** an image file copied in Finder (JPEG honoring its EXIF
@@ -87,9 +93,9 @@ on GitHub Actions (macOS 15) on every push; the screenshots and `Rabisco.app` ar
 as workflow artifacts.
 
 **Releasing:** bump `version` in `Cargo.toml` and push a matching tag
-(`git tag v0.1.1 && git push origin v0.1.1`). The *Release* workflow builds a universal
-`Rabisco.dmg` (plus a `Rabisco.zip`) and creates the release; the website's download button
-always points to the latest one.
+(`git tag v0.2.0 && git push origin v0.2.0`). The *Release* workflow builds a universal
+`Rabisco.dmg` (plus a `Rabisco.zip`, which updates install, and their `SHA256SUMS`) and
+creates the release; the website's download button always points to the latest one.
 
 **Website:** `site/` (plain HTML, CSS and a little JS, no build step) is published to GitHub
 Pages by the *Site* workflow on every push that touches it.
@@ -111,6 +117,7 @@ Code comments are in Portuguese.
 | `src/canvas.rs` | strokes, undo/redo and rendering (tiny-skia) |
 | `src/clipboard.rs` | NSPasteboard, PNG/TIFF and DPI |
 | `src/login.rs` | launch at login (LaunchAgent) |
+| `src/update.rs` | updating to the latest release (with [cerne](https://github.com/victorlcampos/cerne)) and reopening |
 | `src/reopen.rs` | launching the app again opens the editor |
 | `src/icons.rs`, `src/theme.rs` | icons drawn in code, and colors |
 | `assets/` | app and menu bar icons, DMG background (SVG sources + PNGs) |

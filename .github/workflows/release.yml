@@ -33,8 +33,10 @@ jobs:
           UNIVERSAL=1 ./scripts/bundle.sh
           ./scripts/dmg.sh
           ditto -c -k --keepParent target/Rabisco.app target/Rabisco.zip
+          # O `rabisco update` só instala o Rabisco.zip que bater com este SHA-256.
+          (cd target && shasum -a 256 Rabisco.dmg Rabisco.zip > SHA256SUMS && cat SHA256SUMS)
 
       - name: Cria a release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" target/Rabisco.dmg target/Rabisco.zip --title "Rabisco $GITHUB_REF_NAME" --generate-notes
+        run: gh release create "$GITHUB_REF_NAME" target/Rabisco.dmg target/Rabisco.zip target/SHA256SUMS --title "Rabisco $GITHUB_REF_NAME" --generate-notes

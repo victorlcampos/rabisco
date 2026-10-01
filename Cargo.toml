@@ -1,12 +1,13 @@
 [package]
 name = "rabisco"
-version = "0.1.2"
+version = "0.2.0"
 edition = "2024"
 rust-version = "1.95"
 description = "Rabisque a imagem do clipboard (estilo editor do WhatsApp) e devolva para o clipboard."
 license = "MIT"
 
 [dependencies]
+cerne = { git = "https://github.com/victorlcampos/cerne", tag = "v0.1.0", features = ["update"] }
 egui = "0.36"
 egui-winit = { version = "0.36", default-features = false }
 egui-wgpu = { version = "0.36", features = ["winit"] }

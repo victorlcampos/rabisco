@@ -17,6 +17,7 @@ use crate::{UserEvent, icons, login};
 pub const SHORTCUT: &str = "⌃⇧E";
 pub const MENU_EDIT: &str = "edit";
 pub const MENU_LOGIN: &str = "login";
+pub const MENU_UPDATE: &str = "update";
 pub const MENU_QUIT: &str = "quit";
 
 pub struct Agent {
@@ -55,18 +56,24 @@ impl Agent {
             login::is_enabled(),
             None,
         );
+        let update = MenuItem::with_id(MENU_UPDATE, "Procurar atualização", true, None);
         let quit = MenuItem::with_id(MENU_QUIT, "Sair do Rabisco", true, None);
         let menu = Menu::new();
         let separator = PredefinedMenuItem::separator();
         let separator2 = PredefinedMenuItem::separator();
-        if let Err(err) = menu.append_items(&[&edit, &separator, &login_item, &separator2, &quit]) {
+        if let Err(err) =
+            menu.append_items(&[&edit, &separator, &login_item, &update, &separator2, &quit])
+        {
             eprintln!("Erro montando o menu: {err}");
         }
 
         let tray = TrayIconBuilder::new()
             .with_icon(icons::tray_icon())
             .with_icon_as_template(true)
-            .with_tooltip(format!("Rabisco — {SHORTCUT} edita a imagem do clipboard"))
+            .with_tooltip(format!(
+                "Rabisco {} — {SHORTCUT} edita a imagem do clipboard",
+                env!("CARGO_PKG_VERSION")
+            ))
             .with_menu(Box::new(menu))
             .build()
             .expect("ícone na barra de menus");
